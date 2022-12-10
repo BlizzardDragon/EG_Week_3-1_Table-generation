@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
+    [SerializeField] private float _movementSpeed = 10f;
+    [SerializeField] private float _lerpSpeed = 2f;
     [SerializeField] private Vector3 _rotateDirectionCenter = Vector3.up * 5;
 
     [Space]
@@ -11,16 +13,35 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private Transform _camera;
 
     [Space]
-    [SerializeField] private List<CameraData> _cameraData = new List<CameraData>(); 
+    [SerializeField] private List<CameraData> _cameraData = new List<CameraData>();
+
+    private Vector3 _targetPosition;
+
+    private void Start()
+    {
+        _targetPosition = _camera.localPosition;
+    }
 
     private void Update()
     {
         _cameraCenter.transform.Rotate(_rotateDirectionCenter * Time.deltaTime);
+
+        if (Input.GetKey(KeyCode.W))
+        {
+            _targetPosition += _camera.transform.InverseTransformDirection(_camera.forward) * Time.deltaTime * _movementSpeed;
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            _targetPosition -= _camera.transform.InverseTransformDirection(_camera.forward) * Time.deltaTime * _movementSpeed;
+        }
+
+        _camera.localPosition = Vector3.Lerp(_camera.localPosition, _targetPosition, Time.deltaTime * _lerpSpeed);
     }
 }
 
 [System.Serializable]
-public struct CameraData 
+public struct CameraData
 {
     [SerializeField] private Vector3 _position;
     [SerializeField] private Vector3 _rotation;
