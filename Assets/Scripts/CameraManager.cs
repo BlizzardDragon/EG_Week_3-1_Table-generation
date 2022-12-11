@@ -26,14 +26,15 @@ public class CameraManager : MonoBehaviour
     {
         _cameraCenter.transform.Rotate(_rotateDirectionCenter * Time.deltaTime);
 
+        Vector3 moveDirection = new Vector3(0, -0.25f, 1f);
         if (Input.GetKey(KeyCode.W))
         {
-            _targetPosition += _camera.transform.InverseTransformDirection(_camera.forward) * Time.deltaTime * _movementSpeed;
+            _targetPosition += _camera.transform.InverseTransformDirection(moveDirection) * Time.deltaTime * _movementSpeed;
         }
 
         if (Input.GetKey(KeyCode.S))
         {
-            _targetPosition -= _camera.transform.InverseTransformDirection(_camera.forward) * Time.deltaTime * _movementSpeed;
+            _targetPosition -= _camera.transform.InverseTransformDirection(moveDirection) * Time.deltaTime * _movementSpeed;
         }
 
         _camera.localPosition = Vector3.Lerp(_camera.localPosition, _targetPosition, Time.deltaTime * _lerpSpeed);

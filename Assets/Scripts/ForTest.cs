@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
 
 public class ForTest : MonoBehaviour
 {
@@ -14,7 +13,9 @@ public class ForTest : MonoBehaviour
     [SerializeField] private Material _materialB;
     [SerializeField] private Material _tableTop;
     [SerializeField] private Material _tableBottom;
-    private List<GameObject> _gameObjects = new List<GameObject>();
+    [SerializeField] private List<Material> _materialPool = new List<Material>();
+    [SerializeField] private List<Material> _availableMaterials = new List<Material>();
+    private List<GameObject> _allBoxes = new List<GameObject>();
 
     private void Start()
     {
@@ -23,6 +24,7 @@ public class ForTest : MonoBehaviour
 
     private IEnumerator StartSpawnProcess()
     {
+        ChooseRandomMaterial();
         string[] letters = new string[8] { "A", "B", "C", "D", "E", "F", "G", "H" };
 
         for (int x = -10; x < 20; x++)
@@ -42,7 +44,7 @@ public class ForTest : MonoBehaviour
                         {
                             NewBox.GetComponentInChildren<Text>().text = z.ToString();
                         }
-                        _gameObjects.Add(NewBox);
+                        _allBoxes.Add(NewBox);
                         yield return new WaitForSeconds(_spawnRate);
                     }
                     else if (x == 9 && z > -1 && z < 10 && y == 19)
@@ -57,14 +59,14 @@ public class ForTest : MonoBehaviour
                             NewBox.GetComponentInChildren<Text>().text = (9 - z).ToString();
                             NewBox.GetComponentInChildren<Canvas>().transform.rotation = Quaternion.Euler(90, 0, 180);
                         }
-                        _gameObjects.Add(NewBox);
+                        _allBoxes.Add(NewBox);
                         yield return new WaitForSeconds(_spawnRate);
                     }
                     else if (z == 0 && x > -1 && x < 10 && y == 19)
                     {
                         GameObject NewBox = Instantiate(_rim, new Vector3(x, y + 0.125f, z), Quaternion.identity, transform);
                         NewBox.GetComponentInChildren<Text>().text = letters[x - 1];
-                        _gameObjects.Add(NewBox);
+                        _allBoxes.Add(NewBox);
                         yield return new WaitForSeconds(_spawnRate);
                     }
                     else if (z == 9 && x > -1 && x < 10 && y == 19)
@@ -72,7 +74,7 @@ public class ForTest : MonoBehaviour
                         GameObject NewBox = Instantiate(_rim, new Vector3(x, y + 0.125f, z), Quaternion.identity, transform);
                         NewBox.GetComponentInChildren<Text>().text = letters[8 - x];
                         NewBox.GetComponentInChildren<Canvas>().transform.rotation = Quaternion.Euler(90, 0, 180);
-                        _gameObjects.Add(NewBox);
+                        _allBoxes.Add(NewBox);
                         yield return new WaitForSeconds(_spawnRate);
                     }
                     else
@@ -80,7 +82,7 @@ public class ForTest : MonoBehaviour
                         if (x > -1 && x < 10 && z > -1 && z < 10 && y == 19)
                         {
                             GameObject NewBox = Instantiate(_boxPrefab, new Vector3(x, y, z), Quaternion.identity, transform);
-                            _gameObjects.Add(NewBox);
+                            _allBoxes.Add(NewBox);
                             yield return new WaitForSeconds(_spawnRate);
                             if (z % 2 == 0 && y == 19)
                             {
@@ -111,28 +113,28 @@ public class ForTest : MonoBehaviour
                     {
                         GameObject NewBox = Instantiate(_boxPrefab, new Vector3(x, y, z), Quaternion.identity, transform);
                         NewBox.GetComponent<Renderer>().material = _tableTop;
-                        _gameObjects.Add(NewBox);
+                        _allBoxes.Add(NewBox);
                         yield return new WaitForSeconds(_spawnRate);
                     }
                     if (y > -10 && y < 18 && x > 3 && x < 6 && z > 3 && z < 6)
                     {
                         GameObject NewBox = Instantiate(_boxPrefab, new Vector3(x, y, z), Quaternion.identity, transform);
                         NewBox.GetComponent<Renderer>().material = _tableBottom;
-                        _gameObjects.Add(NewBox);
+                        _allBoxes.Add(NewBox);
                         yield return new WaitForSeconds(_spawnRate);
                     }
                     if (y == -10 && x > -7 && x < 16 && z > 3 && z < 6)
                     {
                         GameObject NewBox = Instantiate(_boxPrefab, new Vector3(x, y, z), Quaternion.identity, transform);
                         NewBox.GetComponent<Renderer>().material = _tableBottom;
-                        _gameObjects.Add(NewBox);
+                        _allBoxes.Add(NewBox);
                         yield return new WaitForSeconds(_spawnRate);
                     }
                     if (y == -10 && x > 3 && x < 6 && z > -7 && z < 16)
                     {
                         GameObject NewBox = Instantiate(_boxPrefab, new Vector3(x, y, z), Quaternion.identity, transform);
                         NewBox.GetComponent<Renderer>().material = _tableBottom;
-                        _gameObjects.Add(NewBox);
+                        _allBoxes.Add(NewBox);
                         yield return new WaitForSeconds(_spawnRate);
                     }
                 }
@@ -145,15 +147,25 @@ public class ForTest : MonoBehaviour
 
     private IEnumerator StartDespawnProcess()
     {
-        while (_gameObjects.Count > 0)
+        while (_allBoxes.Count > 0)
         {
-            Destroy(_gameObjects[0].gameObject);
-            _gameObjects.RemoveAt(0);
+            Destroy(_allBoxes[0].gameObject);
+            _allBoxes.RemoveAt(0);
             yield return new WaitForSeconds(_spawnRate);
         }
-
-        yield return new WaitForSeconds(_coroutineSwitchingTime);
+        yield return new WaitForSeconds(1);
         StartCoroutine(StartSpawnProcess());
+    }
+
+    private void ChooseRandomMaterial()
+    {
+        if (_availableMaterials.Count == 0)
+        {
+            _availableMaterials = new List<Material>(_materialPool);
+        }
+        int randomMaterialIndex = Random.Range(0, _availableMaterials.Count);
+        _tableTop = _availableMaterials[randomMaterialIndex];
+        _availableMaterials.RemoveAt(randomMaterialIndex);
     }
 
     [ContextMenu("TestSpawn")]

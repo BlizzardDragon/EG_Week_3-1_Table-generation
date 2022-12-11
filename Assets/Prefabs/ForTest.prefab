@@ -50,5 +50,6 @@ MonoBehaviour:
   _rim: {fileID: 1398738706100135624, guid: 9084099e50b81ea4484a5984c80bfaa9, type: 3}
   _materialA: {fileID: 2100000, guid: 0bf3fe356c6d98f49b2953168e229fe4, type: 2}
   _materialB: {fileID: 2100000, guid: 54eb0a880c35ecd4fa56b3b6c33e8aaa, type: 2}
-  _tableTop: {fileID: 2100000, guid: 066b9d4226a03ce44a7a412c4eb9460d, type: 2}
+  _tableTop: {fileID: 2100000, guid: 3cd173ae4543f8745ac463237321e8db, type: 2}
   _tableBottom: {fileID: 2100000, guid: c5402622ba75cbf47964fd429ad67704, type: 2}
+  _materialPool: []
