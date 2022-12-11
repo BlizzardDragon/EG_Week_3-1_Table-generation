@@ -6,6 +6,10 @@ public class CameraManager : MonoBehaviour
 {
     [SerializeField] private float _movementSpeed = 10f;
     [SerializeField] private float _lerpSpeed = 2f;
+    [SerializeField] private float _startPositionZ;
+    [SerializeField] private float _waitTime = 2f;
+    [SerializeField] private float _endPositionZ;
+    [SerializeField] Vector3 _moveDirection = new Vector3(0, -0.6f, 1f);
     [SerializeField] private Vector3 _rotateDirectionCenter = Vector3.up * 5;
 
     [Space]
@@ -20,24 +24,35 @@ public class CameraManager : MonoBehaviour
     private void Start()
     {
         _targetPosition = _camera.localPosition;
+        StartCoroutine(Approximation());
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         _cameraCenter.transform.Rotate(_rotateDirectionCenter * Time.deltaTime);
-
-        Vector3 moveDirection = new Vector3(0, -0.25f, 1f);
-        if (Input.GetKey(KeyCode.W))
-        {
-            _targetPosition += _camera.transform.InverseTransformDirection(moveDirection) * Time.deltaTime * _movementSpeed;
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            _targetPosition -= _camera.transform.InverseTransformDirection(moveDirection) * Time.deltaTime * _movementSpeed;
-        }
-
         _camera.localPosition = Vector3.Lerp(_camera.localPosition, _targetPosition, Time.deltaTime * _lerpSpeed);
+    }
+
+    private IEnumerator Approximation()
+    {
+        while (_targetPosition.z < _endPositionZ)
+        {
+            _targetPosition += _moveDirection * Time.deltaTime * _movementSpeed;
+            yield return null;
+        }
+        yield return new WaitForSeconds(_waitTime);
+        StartCoroutine(Alienate());
+    }
+
+    private IEnumerator Alienate()
+    {
+        while (_targetPosition.z > _startPositionZ)
+        {
+            _targetPosition -= _moveDirection * Time.deltaTime * _movementSpeed;
+            yield return null;
+        }
+        yield return new WaitForSeconds(_waitTime);
+        StartCoroutine(Approximation());
     }
 }
 
