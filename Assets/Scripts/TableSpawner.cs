@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ForTest : MonoBehaviour
+public class TableSpawner : MonoBehaviour
 {
     [SerializeField] private float _spawnRate = 0.01f;
     [SerializeField] private float _coroutineSwitchingTime = 3f;
